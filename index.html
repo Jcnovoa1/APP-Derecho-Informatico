@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comercio Cerca | Tu barrio a un clic</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #059669;
+            --bg-light: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* HEADER & NAV */
+        header {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .search-bar {
+            flex: 1;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 0.6rem 1rem;
+            border-radius: 9999px;
+            border: 1px solid var(--border);
+            outline: none;
+            font-size: 0.95rem;
+        }
+
+        .actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .cart-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 9999px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background 0.2s;
+        }
+
+        .cart-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .badge {
+            background: white;
+            color: var(--primary);
+            border-radius: 50%;
+            padding: 0.1rem 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        /* MAIN CONTAINER */
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            flex: 1;
+        }
+
+        /* HERO & LEGAL NOTICE */
+        .banner {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .banner h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .banner p {
+            color: #94a3b8;
+            margin-bottom: 1rem;
+        }
+
+        .legal-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.5rem;
+            font-size: 0.85rem;
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+        }
+
+        /* CATEGORIES */
+        .categories {
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .category-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            cursor: pointer;
+            white-space: nowrap;
+            font-size: 0.9rem;
+            font-weight: 500;
+
+        }
+
+        .category-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* PRODUCT GRID */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+
+        .card-img {
+            height: 160px;
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        .card-body {
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .merchant-tag {
+            font-size: 0.75rem;
+            color: var(--primary);
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 0.25rem;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-price {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-top: auto;
+            margin-bottom: 1rem;
+        }
+
+        .btn-add {
+            width: 100%;
+            background: var(--bg-light);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 0.6rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-add:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.open {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            width: 90%;
+            max-width: 500px;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .legal-box {
+            background: #f1f5f9;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin: 1rem 0;
+            border-left: 3px solid var(--primary);
+        }
+
+        .form-group {
+            margin-bottom: 0.75rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 0.4rem;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        /* FOOTER */
+        footer {
+            background: var(--card-bg);
+            border-top: 1px solid var(--border);
+            padding: 2rem 1rem;
+            margin-top: 3rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <div class="header-container">
+            <a href="#" class="logo">📍 Comercio Cerca</a>
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Buscar productos o comercios del barrio..." onkeyup="filtrarProductos()">
+            </div>
+            <div class="actions">
+                <button class="cart-btn" onclick="abrirCarrito()">
+                    🛒 Carrito <span class="badge" id="cartCount">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main>
+        <!-- BANNER & LEGAL STACK -->
+        <section class="banner">
+            <h1>Comercio de cercanía digitalizado</h1>
+            <p>Conexión directa entre comercios del barrio y vecinos, bajo estándares de protección de datos y compra transparente.</p>
+            <div class="legal-tag">
+                🔒 Procesamiento bajo Ley N° 25.326 de Protección de Datos Personales
+            </div>
+        </section>
+
+        <!-- FILTROS DE CATEGORÍA -->
+        <section class="categories">
+            <button class="category-btn active" onclick="filtrarCategoria('todas', this)">Todas las tiendas</button>
+            <button class="category-btn" onclick="filtrarCategoria('Almacén', this)">Almacenes</button>
+            <button class="category-btn" onclick="filtrarCategoria('Verdulería', this)">Verdulerías</button>
+            <button class="category-btn" onclick="filtrarCategoria('Panadería', this)">Panaderías</button>
+            <button class="category-btn" onclick="filtrarCategoria('Farmacia', this)">Farmacias</button>
+        </section>
+
+        <!-- GRILLA DE PRODUCTOS -->
+        <section class="grid" id="productGrid">
+            <!-- Renderizado por JS -->
+        </section>
+    </main>
+
+    <!-- MODAL DE CARRITO / CHECKOUT -->
+    <div class="modal" id="cartModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Detalle del Pedido</h3>
+                <button class="close-btn" onclick="cerrarCarrito()">&times;</button>
+            </div>
+            
+            <div id="cartItems">
+                <!-- Items vacíos por defecto -->
+            </div>
+
+            <div style="margin-top: 1rem; font-weight: 700; font-size: 1.1rem; text-align: right;" id="cartTotal">
+                Total: $0
+            </div>
+
+            <hr style="margin: 1rem 0; border: none; border-top: 1px solid var(--border);">
+
+            <!-- DATOS DE ENVÍO Y PRIVACIDAD -->
+            <form id="checkoutForm" onsubmit="procesarPedido(event)">
+                <h4 style="margin-bottom: 0.5rem;">Datos de Entrega</h4>
+                <div class="form-group">
+                    <label>Nombre y Apellido</label>
+                    <input type="text" required placeholder="Ej. Alex Rodríguez">
+                </div>
+                <div class="form-group">
+                    <label>Dirección del Barrio</label>
+                    <input type="text" required placeholder="Ej. Av. San Martín 1234">
+                </div>
+                <div class="form-group">
+                    <label>Correo Electrónico</label>
+                    <input type="email" required placeholder="usuario@email.com">
+                </div>
+
+                <!-- CHECKBOX OBLIGATORIO DE CONSENTIMIENTO INFORMADO -->
+                <div style="margin: 1rem 0; font-size: 0.8rem;">
+                    <label style="display: flex; gap: 0.5rem; align-items: flex-start; cursor: pointer;">
+                        <input type="checkbox" required style="width: auto; margin-top: 0.2rem;">
+                        <span>Se autoriza el tratamiento de datos personales únicamente para la gestión de este pedido y se aceptan las políticas del sitio (Ley 25.326).</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="checkout-btn">Confirmar Pedido</button>
+            </form>
+
+            <div class="legal-box">
+                <b>Aviso para Titulares de Derechos:</b> En cumplimiento del régimen de intermediarios digitales (Ley 11.723), los contenidos expuestos son provistos por los comercios adheridos. Se dispone de canales de notificación y baja preventiva (*Notice & Take Down*).
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-container">
+            <div>
+                <p><b>Plataforma Comercio Cerca</b></p>
+                <p>Red de intermediación local para comercios de barrio.</p>
+            </div>
+            <div>
+                <p><b>Cumplimiento Normativo</b></p>
+                <p>• Registro de bases de datos ante la AAIP</p>
+                <p>• Protección al Consumidor (Art. 42 CN)</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- LÓGICA JAVASCRIPT -->
+    <script>
+        // Datos de muestra de comercios locales
+        const productos = [
+            { id: 1, nombre: "Pan Casero (Kg)", comercio: "Panadería Don Julián", categoria: "Panadería", precio: 1200, icono: "🥖" },
+            { id: 2, nombre: "Manzanas Red Del. (Kg)", comercio: "Verdulería La Huerta", categoria: "Verdulería", precio: 1800, icono: "🍎" },
+            { id: 3, nombre: "Leche Entera 1L", comercio: "Almacén El Vecino", categoria: "Almacén", precio: 1100, icono: "🥛" },
+            { id: 4, nombre: "Alcohol en Gel 250ml", comercio: "Farmacia Central", categoria: "Farmacia", precio: 1500, icono: "🧴" },
+            { id: 5, nombre: "Queso Cremoso (500g)", comercio: "Almacén El Vecino", categoria: "Almacén", precio: 3200, icono: "🧀" },
+            { id: 6, nombre: "Facturas Surtidas (Docena)", comercio: "Panadería Don Julián", categoria: "Panadería", precio: 4500, icono: "🥐" }
+        ];
+
+        let carrito = [];
+        let categoriaActual = 'todas';
+
+        // Renderizar Productos
+        function renderProductos(items) {
+            const grid = document.getElementById('productGrid');
+            grid.innerHTML = '';
+            
+            if(items.length === 0) {
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">No se encontraron productos en esta categoría.</p>';
+                return;
+            }
+
+            items.forEach(prod => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="card-img">${prod.icono}</div>
+                    <div class="card-body">
+                        <div class="merchant-tag">${prod.comercio}</div>
+                        <div class="card-title">${prod.nombre}</div>
+                        <div class="card-price">$${prod.precio}</div>
+                        <button class="btn-add" onclick="agregarAlCarrito(${prod.id})">Agregar al Carrito</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Agregar al carrito
+        function agregarAlCarrito(id) {
+            const prod = productos.find(p => p.id === id);
+            carrito.push(prod);
+            actualizarCarritoUI();
+        }
+
+        // Actualizar UI Carrito
+        function actualizarCarritoUI() {
+            document.getElementById('cartCount').innerText = carrito.length;
+            
+            const cartItems = document.getElementById('cartItems');
+            cartItems.innerHTML = '';
+            
+            let total = 0;
+            if(carrito.length === 0) {
+                cartItems.innerHTML = '<p style="color: var(--text-muted);">El carrito está vacío.</p>';
+            } else {
+                carrito.forEach((item, idx) => {
+                    total += item.precio;
+                    const div = document.createElement('div');
+                    div.className = 'cart-item';
+                    div.innerHTML = `
+                        <div>
+                            <b>${item.nombre}</b><br>
+                            <small style="color: var(--text-muted);">${item.comercio}</small>
+                        </div>
+                        <div>
+                            <span>$${item.precio}</span>
+                            <button onclick="eliminarDelCarrito(${idx})" style="background:none; border:none; color:red; cursor:pointer; margin-left:0.5rem;">✕</button>
+                        </div>
+                    `;
+                    cartItems.appendChild(div);
+                });
+            }
+            
+            document.getElementById('cartTotal').innerText = `Total: $${total}`;
+        }
+
+        function eliminarDelCarrito(index) {
+            carrito.splice(index, 1);
+            actualizarCarritoUI();
+        }
+
+        // Modal Controls
+        function abrirCarrito() {
+            document.getElementById('cartModal').classList.add('open');
+        }
+
+        function cerrarCarrito() {
+            document.getElementById('cartModal').classList.remove('open');
+        }
+
+        // Filtros
+        function filtrarCategoria(cat, btn) {
+            categoriaActual = cat;
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            aplicarFiltros();
+        }
+
+        function filtrarProductos() {
+            aplicarFiltros();
+        }
+
+        function aplicarFiltros() {
+            const busqueda = document.getElementById('searchInput').value.toLowerCase();
+            const filtrados = productos.filter(p => {
+                const coincideCat = categoriaActual === 'todas' || p.categoria === categoriaActual;
+                const coincideBusqueda = p.nombre.toLowerCase().includes(busqueda) || p.comercio.toLowerCase().includes(busqueda);
+                return coincideCat && coincideBusqueda;
+            });
+            renderProductos(filtrados);
+        }
+
+        // Simulación de pedido
+        function procesarPedido(e) {
+            e.preventDefault();
+            if(carrito.length === 0) {
+                alert('El carrito está vacío. Agregue productos antes de realizar el pedido.');
+                return;
+            }
+            alert('¡Pedido registrado correctamente!\n\nSe ha enviado la confirmación y los datos personales fueron procesados respetando el marco de protección de datos vigentes.');
+            carrito = [];
+            actualizarCarritoUI();
+            cerrarCarrito();
+        }
+
+        // Inicializar
+        renderProductos(productos);
+    </script>
+</body>
+</html>
